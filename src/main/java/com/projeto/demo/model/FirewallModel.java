@@ -21,9 +21,11 @@ public class FirewallModel extends RepresentationModel<FirewallModel> implements
   private static final long serialVersionUID = 1L;
 
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
   private String dispositivo;
+  private String dadosPretendidos;
+  private String observacoes;
   private boolean nomePadronizado;
   private boolean wks;
   private boolean ip;

@@ -2,6 +2,8 @@ package com.projeto.demo.dtos;
 
 public record FirewallDTO(
         String dispositivo,
+        String dadosPretendidos,
+        String observacoes,
         boolean nomePadronizado,
         boolean wks,
         boolean ip,
