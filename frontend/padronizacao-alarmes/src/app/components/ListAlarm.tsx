@@ -32,6 +32,7 @@ interface AlarmData {
 export default function ListAlarms() {
   const [data, setData] = useState<AlarmData[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -48,71 +49,67 @@ export default function ListAlarms() {
     fetchData();
   }, []);
 
+  const filteredData = data.filter((item) =>
+    item.dispositivo.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   if (loading) {
-    return <div>Loading...</div>;
+    return <div className="text-center text-xl">Loading...</div>;
   }
 
   return (
-    <div>
-      <h1>Dados do Firewall</h1>
-      <table>
+    <div className="p-6">
+      <h1 className="text-2xl font-bold mb-4">Dados do Firewall</h1>
+      <input
+        type="text"
+        placeholder="Busca de dispositivo"
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        className="mb-4 p-2 border border-gray-300 rounded w-full"
+      />
+      <table className="min-w-full border-collapse border border-gray-300">
         <thead>
-          <tr>
-            <th>ID</th>
-            <th>Dispositivo</th>
-            <th>Dados Pretendidos</th>
-            <th>Observações</th>
-            <th>Nome Padronizado</th>
-            <th>WKS</th>
-            <th>IP</th>
-            <th>Ping</th>
-            <th>Uptime</th>
-            <th>Fonte de Alimentação</th>
-            <th>Memória</th>
-            <th>Temperatura</th>
-            <th>CPU</th>
-            <th>Cooler</th>
-            <th>Tensão</th>
-            <th>LAN Traffic</th>
-            <th>WAN Traffic</th>
-            <th>VLAN 50</th>
-            <th>VLAN 55</th>
-            <th>MPLS 201</th>
-            <th>MPLS 508</th>
-            <th>Destinatário Syslog</th>
-            <th>Netflow V9</th>
-            <th>Syslog Atualizado</th>
+          <tr className="bg-black text-white">
+            {["ID", "Dispositivo", "Dados Pretendidos", "Observações", "Nome Padronizado", "WKS", "IP", "Ping", "Uptime", "Fonte de Alimentação", "Memória", "Temperatura", "CPU", "Cooler", "Tensão", "LAN Traffic", "WAN Traffic", "VLAN 50", "VLAN 55", "MPLS 201", "MPLS 508", "Destinatário Syslog", "Netflow V9", "Syslog Atualizado"].map((header) => (
+              <th key={header} className="border border-gray-300 px-4 py-2">{header}</th>
+            ))}
           </tr>
         </thead>
         <tbody>
-          {data.map((item) => (
-            <tr key={item.id}>
-              <td>{item.id}</td>
-              <td>{item.dispositivo}</td>
-              <td>{item.dadosPretendidos}</td>
-              <td>{item.observacoes}</td>
-              <td>{item.nomePadronizado ? "Sim" : "Não"}</td>
-              <td>{item.wks ? "Sim" : "Não"}</td>
-              <td>{item.ip ? "Sim" : "Não"}</td>
-              <td>{item.ping ? "Sim" : "Não"}</td>
-              <td>{item.uptime ? "Sim" : "Não"}</td>
-              <td>{item.fonteAlimentacao ? "Sim" : "Não"}</td>
-              <td>{item.memoria ? "Sim" : "Não"}</td>
-              <td>{item.temperatura ? "Sim" : "Não"}</td>
-              <td>{item.cpu ? "Sim" : "Não"}</td>
-              <td>{item.cooler ? "Sim" : "Não"}</td>
-              <td>{item.tensao ? "Sim" : "Não"}</td>
-              <td>{item.lanTraffic ? "Sim" : "Não"}</td>
-              <td>{item.wanTraffic ? "Sim" : "Não"}</td>
-              <td>{item.vlan50 ? "Sim" : "Não"}</td>
-              <td>{item.vlan55 ? "Sim" : "Não"}</td>
-              <td>{item.mpls201 ? "Sim" : "Não"}</td>
-              <td>{item.mpls508 ? "Sim" : "Não"}</td>
-              <td>{item.destinatarioSyslog ? "Sim" : "Não"}</td>
-              <td>{item.netflowV9 ? "Sim" : "Não"}</td>
-              <td>{item.syslogAtualizado ? "Sim" : "Não"}</td>
+          {filteredData.length === 0 ? (
+            <tr>
+              <td colSpan={24} className="text-center py-4">Nenhum dado encontrado</td>
             </tr>
-          ))}
+          ) : (
+            filteredData.map((item) => (
+              <tr key={item.id} className="hover:bg-gray-100">
+                <td className="border border-gray-300 px-4 py-2">{item.id}</td>
+                <td className="border border-gray-300 px-4 py-2">{item.dispositivo}</td>
+                <td className="border border-gray-300 px-4 py-2">{item.dadosPretendidos}</td>
+                <td className="border border-gray-300 px-4 py-2">{item.observacoes}</td>
+                <td className="border border-gray-300 px-4 py-2">{item.nomePadronizado ? "Sim" : "Não"}</td>
+                <td className="border border-gray-300 px-4 py-2">{item.wks ? "Sim" : "Não"}</td>
+                <td className="border border-gray-300 px-4 py-2">{item.ip ? "Sim" : "Não"}</td>
+                <td className="border border-gray-300 px-4 py-2">{item.ping ? "Sim" : "Não"}</td>
+                <td className="border border-gray-300 px-4 py-2">{item.uptime ? "Sim" : "Não"}</td>
+                <td className="border border-gray-300 px-4 py-2">{item.fonteAlimentacao ? "Sim" : "Não"}</td>
+                <td className="border border-gray-300 px-4 py-2">{item.memoria ? "Sim" : "Não"}</td>
+                <td className="border border-gray-300 px-4 py-2">{item.temperatura ? "Sim" : "Não"}</td>
+                <td className="border border-gray-300 px-4 py-2">{item.cpu ? "Sim" : "Não"}</td>
+                <td className="border border-gray-300 px-4 py-2">{item.cooler ? "Sim" : "Não"}</td>
+                <td className="border border-gray-300 px-4 py-2">{item.tensao ? "Sim" : "Não"}</td>
+                <td className="border border-gray-300 px-4 py-2">{item.lanTraffic ? "Sim" : "Não"}</td>
+                <td className="border border-gray-300 px-4 py-2">{item.wanTraffic ? "Sim" : "Não"}</td>
+                <td className="border border-gray-300 px-4 py-2">{item.vlan50 ? "Sim" : "Não"}</td>
+                <td className="border border-gray-300 px-4 py-2">{item.vlan55 ? "Sim" : "Não"}</td>
+                <td className="border border-gray-300 px-4 py-2">{item.mpls201 ? "Sim" : "Não"}</td>
+                <td className="border border-gray-300 px-4 py-2">{item.mpls508 ? "Sim" : "Não"}</td>
+                <td className="border border-gray-300 px-4 py-2">{item.destinatarioSyslog ? "Sim" : "Não"}</td>
+                <td className="border border-gray-300 px-4 py-2">{item.netflowV9 ? "Sim" : "Não"}</td>
+                <td className="border border-gray-300 px-4 py-2">{item.syslogAtualizado ? "Sim" : "Não"}</td>
+              </tr>
+            ))
+          )}
         </tbody>
       </table>
     </div>
