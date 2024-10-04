@@ -18,6 +18,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @RequestMapping("/firewall")
+@CrossOrigin(origins = "http://localhost:3000")
 public class FirewallController {
 
   @Autowired
@@ -68,7 +69,7 @@ public class FirewallController {
 
   @PutMapping("/{id}")
   public ResponseEntity<Object> updateFirewall(@PathVariable(value = "id") Integer id,
-                                               @RequestBody @Valid FirewallDTO firewallDTO) {
+      @RequestBody @Valid FirewallDTO firewallDTO) {
     Optional<FirewallModel> firewallModelOptional = firewallRepository.findById(id);
     if (firewallModelOptional.isEmpty()) {
       return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Firewall não encontrado");
