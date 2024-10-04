@@ -1,4 +1,4 @@
-package com.projeto.demo.model;
+package com.projetopessoal.pradonizacaoalarmes.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -10,10 +10,9 @@ import org.springframework.hateoas.RepresentationModel;
 import java.io.Serial;
 import java.io.Serializable;
 
+
 @EqualsAndHashCode(callSuper = true)
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
 @Entity
 @Table(name = "firewall")
 public class FirewallModel extends RepresentationModel<FirewallModel> implements Serializable {
@@ -47,4 +46,3 @@ public class FirewallModel extends RepresentationModel<FirewallModel> implements
   private boolean netflowV9;
   private boolean syslogAtualizado;
 }
-

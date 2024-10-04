@@ -1,8 +1,8 @@
-package com.projeto.demo.controller;
+package com.projetopessoal.pradonizacaoalarmes.controller;
 
-import com.projeto.demo.dtos.FirewallDTO;
-import com.projeto.demo.model.FirewallModel;
-import com.projeto.demo.repository.FirewallRepository;
+import com.projetopessoal.pradonizacaoalarmes.dtos.FirewallDTO;
+import com.projetopessoal.pradonizacaoalarmes.model.FirewallModel;
+import com.projetopessoal.pradonizacaoalarmes.repository.FirewallRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,9 +16,9 @@ import java.util.Optional;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
-@RestController
-@RequestMapping("/firewall")
 @CrossOrigin(origins = "http://localhost:3000")
+@RestController
+@RequestMapping("/api/firewall")
 public class FirewallController {
 
   @Autowired
@@ -69,7 +69,7 @@ public class FirewallController {
 
   @PutMapping("/{id}")
   public ResponseEntity<Object> updateFirewall(@PathVariable(value = "id") Integer id,
-      @RequestBody @Valid FirewallDTO firewallDTO) {
+                                               @RequestBody @Valid FirewallDTO firewallDTO) {
     Optional<FirewallModel> firewallModelOptional = firewallRepository.findById(id);
     if (firewallModelOptional.isEmpty()) {
       return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Firewall não encontrado");

@@ -1,9 +1,7 @@
-package com.projeto.demo.dtos;
+package com.projetopessoal.pradonizacaoalarmes.dtos;
 
 public record FirewallDTO(
         String dispositivo,
-        String dadosPretendidos,
-        String observacoes,
         boolean nomePadronizado,
         boolean wks,
         boolean ip,
@@ -24,5 +22,5 @@ public record FirewallDTO(
         boolean desinatarioSyslog,
         boolean netflowV9,
         boolean syslogAtualizado
-) {
+        ) {
 }
