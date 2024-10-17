@@ -40,17 +40,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 }
 
 async function handleGet(req: NextApiRequest, res: NextApiResponse, connection: PoolConnection) {
-  const { id } = req.query;
-  let query = 'SELECT * FROM firewall';
-  let params: any[] = [];
+  const { page = 1, limit = 10 } = req.query;
+  const offset = (Number(page) - 1) * Number(limit);
 
-  if (id) {
-    query += ' WHERE id = ?';
-    params.push(id);
-  }
+  const query = 'SELECT * FROM firewall LIMIT ? OFFSET ?';
+  const [rows] = await connection.execute(query, [Number(limit), offset]);
 
-  const [rows] = await connection.execute(query, params);
-  res.status(200).json(rows);
+  const [totalRows] = await connection.execute('SELECT COUNT(*) as count FROM firewall');
+  const totalCount = totalRows[0].count;
+
+  res.status(200).json({
+    content: rows,
+    totalElements: totalCount,
+    totalPages: Math.ceil(totalCount / Number(limit)),
+    currentPage: Number(page)
+  });
 }
 
 async function handlePost(req: NextApiRequest, res: NextApiResponse, connection: PoolConnection) {
