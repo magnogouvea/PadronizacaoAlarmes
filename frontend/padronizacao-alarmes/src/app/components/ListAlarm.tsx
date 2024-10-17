@@ -103,31 +103,53 @@ export default function ListAlarms() {
   };
 
 const createFirewall = async (data: AlarmData) => {
-  const response = await fetch('/api/firewall', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data),
-  });
-  if (response.ok) {
-    // Atualizar a lista de firewalls
-  }
-};
+  try {
+    const response = await fetch('http://localhost:8080/api/firewall', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
 
-const updateFirewall = async (id: number, data: AlarmData) => {
-  const response = await fetch(`/api/firewall?id=${id}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data),
-  });
-  if (response.ok) {
-    // Atualizar a lista de firewalls
+    if (response.ok) {
+      const newFirewall = await response.json();
+      setData([...data, newFirewall]);
+      toast({
+        title: "Sucesso",
+        description: "Firewall criado com sucesso.",
+        variant: "success",
+      });
+    }
+  } catch (error) {
+    console.error("Erro ao criar firewall", error);
+    toast({
+      title: "Erro",
+      description: "Não foi possível criar o firewall.",
+      variant: "destructive",
+    });
   }
 };
 
 const deleteFirewall = async (id: number) => {
-  const response = await fetch(`/api/firewall?id=${id}`, { method: 'DELETE' });
-  if (response.ok) {
-    // Remover o firewall da lista
+  try {
+    const response = await fetch(`http://localhost:8080/api/firewall/${id}`, {
+      method: 'DELETE',
+    });
+
+    if (response.ok) {
+      setData(data.filter((item) => item.id !== id));
+      toast({
+        title: "Sucesso",
+        description: "Firewall excluído com sucesso.",
+        variant: "success",
+      });
+    }
+  } catch (error) {
+    console.error("Erro ao excluir firewall", error);
+    toast({
+      title: "Erro",
+      description: "Não foi possível excluir o firewall.",
+      variant: "destructive",
+    });
   }
 };
 
