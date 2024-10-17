@@ -11,7 +11,6 @@ import java.io.Serial;
 import java.io.Serializable;
 
 
-@EqualsAndHashCode(callSuper = true)
 @Data
 @Entity
 @Table(name = "firewall")
@@ -22,7 +21,9 @@ public class FirewallModel extends RepresentationModel<FirewallModel> implements
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
+  @NotBlank(message = "Dispositivo não pode ser vazio")
   private String dispositivo;
+  
   private String dadosPretendidos;
   private String observacoes;
   private boolean nomePadronizado;
