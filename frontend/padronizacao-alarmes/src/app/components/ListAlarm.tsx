@@ -99,6 +99,35 @@ export default function ListAlarms() {
     }
   };
 
+const createFirewall = async (data: AlarmData) => {
+  const response = await fetch('/api/firewall', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+  if (response.ok) {
+    // Atualizar a lista de firewalls
+  }
+};
+
+const updateFirewall = async (id: number, data: AlarmData) => {
+  const response = await fetch(`/api/firewall?id=${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+  if (response.ok) {
+    // Atualizar a lista de firewalls
+  }
+};
+
+const deleteFirewall = async (id: number) => {
+  const response = await fetch(`/api/firewall?id=${id}`, { method: 'DELETE' });
+  if (response.ok) {
+    // Remover o firewall da lista
+  }
+};
+
   const filteredData = data.filter(item =>
     item.dispositivo.toLowerCase().includes(searchTerm.toLowerCase())
   );
