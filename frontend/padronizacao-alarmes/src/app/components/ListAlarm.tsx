@@ -4,6 +4,9 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Pagination } from '@/components/ui/pagination';
 import { useToast } from '@/components/ui/use-toast';
+import { FirewallTable } from './FirewallTable';
+import { EditFirewallForm } from './EditFirewallForm';
+
 
 interface AlarmData {
   id: number;
@@ -173,6 +176,30 @@ const deleteFirewall = async (id: number) => {
   }
 
   return (
+     <div>
+      <h1>Dados do Firewall</h1>
+      <Input
+        type="text"
+        placeholder="Pesquisar por dispositivo"
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+      />
+
+      {editingId ? (
+        <EditFirewallForm
+          editedData={editedData!}
+          onChange={setEditedData!}
+          onSave={handleSave}
+          onCancel={() => setEditingId(null)}
+        />
+      ) : (
+        <FirewallTable
+          data={currentItems}
+          onEdit={handleEdit}
+          onDelete={deleteFirewall}
+        />
+      )}
+    </div>
     <div className="p-4">
       <h1 className="text-2xl font-bold mb-4">Dados do Firewall</h1>
       <Input
