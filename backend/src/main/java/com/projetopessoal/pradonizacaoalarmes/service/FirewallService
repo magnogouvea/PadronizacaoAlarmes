@@ -1,1 +1,47 @@
+@Service
+@Slf4j
+public class FirewallService {
+    @Autowired
+    private FirewallRepository firewallRepository;
+    
+    @Autowired
+    private FirewallMapper firewallMapper;
+
+    public FirewallModel saveFirewall(FirewallDTO firewallDTO) {
+        if (firewallRepository.existsByDispositivo(firewallDTO.dispositivo())) {
+            log.warn("Tentativa de cadastrar dispositivo duplicado: {}", firewallDTO.dispositivo());
+            throw new ConflictException("Dispositivo já cadastrado");
+        }
+        FirewallModel firewallModel = firewallMapper.toModel(firewallDTO);
+        log.info("Salvando novo firewall: {}", firewallDTO.dispositivo());
+        return firewallRepository.save(firewallModel);
+    }
+
+    public Page<FirewallModel> getAllFirewalls(Pageable pageable, String filtro) {
+        log.info("Buscando todos os firewalls com filtro: {}", filtro);
+        if (filtro != null && !filtro.isEmpty()) {
+            return firewallRepository.findByDispositivoContainingIgnoreCase(filtro, pageable);
+        }
+        return firewallRepository.findAll(pageable);
+    }
+
+    public FirewallModel getFirewallById(Integer id) {
+        log.info("Buscando firewall por ID: {}", id);
+        return firewallRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Firewall não encontrado"));
+    }
+
+    public FirewallModel updateFirewall(Integer id, FirewallDTO firewallDTO) {
+        log.info("Atualizando firewall com ID: {}", id);
+        FirewallModel existingFirewall = getFirewallById(id);
+        BeanUtils.copyProperties(firewallDTO, existingFirewall, "id");
+        return firewallRepository.save(existingFirewall);
+    }
+
+    public void deleteFirewall(Integer id) {
+        log.info("Deletando firewall com ID: {}", id);
+        FirewallModel firewall = getFirewallById(id);
+        firewallRepository.delete(firewall);
+    }
+}
 
