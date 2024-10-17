@@ -129,6 +129,69 @@ const createFirewall = async (data: AlarmData) => {
   }
 };
 
+const getFirewallById = async (id: number) => {
+  try {
+    const response = await fetch(`http://localhost:8080/api/firewall/${id}`, {
+      method: 'GET',
+    });
+
+    if (response.ok) {
+      const firewall = await response.json();
+      return firewall;
+    } else {
+      toast({
+        title: "Erro",
+        description: "Não foi possível buscar os dados do firewall.",
+        variant: "destructive",
+      });
+    }
+  } catch (error) {
+    console.error("Erro ao buscar firewall", error);
+    toast({
+      title: "Erro",
+      description: "Erro ao buscar os dados do firewall.",
+      variant: "destructive",
+    });
+  }
+  return null;
+};
+
+const updateFirewall = async (updatedData: AlarmData) => {
+  try {
+    const response = await fetch(`http://localhost:8080/api/firewall/${updatedData.id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(updatedData),
+    });
+
+    if (response.ok) {
+      const updatedFirewall = await response.json();
+      setData(data.map(item => item.id === updatedFirewall.id ? updatedFirewall : item));
+      toast({
+        title: "Sucesso",
+        description: "Dados do firewall atualizados com sucesso.",
+        variant: "success",
+      });
+      setEditingId(null);
+      setEditedData(null);
+    } else {
+      toast({
+        title: "Erro",
+        description: "Não foi possível atualizar os dados do firewall.",
+        variant: "destructive",
+      });
+    }
+  } catch (error) {
+    console.error("Erro ao atualizar firewall", error);
+    toast({
+      title: "Erro",
+      description: "Erro ao atualizar os dados do firewall.",
+      variant: "destructive",
+    });
+  }
+};
+
+
 const deleteFirewall = async (id: number) => {
   try {
     const response = await fetch(`http://localhost:8080/api/firewall/${id}`, {
