@@ -16,79 +16,62 @@ import java.util.Optional;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = {"http://localhost:3000", "https://seusite.com"}) 
 @RestController
 @RequestMapping("/api/firewall")
+@Slf4j
 public class FirewallController {
+    @Autowired
+    private FirewallService firewallService;
 
-  @Autowired
-  private FirewallRepository firewallRepository;
-
-  private FirewallModel addHateoasLinks(FirewallModel firewall) {
-    Integer id = firewall.getId();
-    firewall.add(linkTo(methodOn(FirewallController.class).getFirewallById(id)).withSelfRel());
-    firewall.add(linkTo(methodOn(FirewallController.class).getAllFirewalls()).withRel("Lista de Firewalls"));
-    return firewall;
-  }
-
-  @PostMapping
-  public ResponseEntity<Object> saveFirewall(@RequestBody @Valid FirewallDTO firewallDTO) {
-    try {
-
-      if (firewallRepository.existsByDispositivo(firewallDTO.dispositivo())) {
-        return ResponseEntity.status(HttpStatus.CONFLICT).body("Dispositivo já cadastrado");
-      }
-
-      var firewallModel = new FirewallModel();
-      BeanUtils.copyProperties(firewallDTO, firewallModel);
-      firewallModel = firewallRepository.save(firewallModel);
-
-      return ResponseEntity.status(HttpStatus.CREATED).body(addHateoasLinks(firewallModel));
-    } catch (Exception e) {
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao salvar o firewall");
-    }
-  }
-
-  @GetMapping
-  public ResponseEntity<List<FirewallModel>> getAllFirewalls() {
-    List<FirewallModel> firewalls = firewallRepository.findAll();
-    if (!firewalls.isEmpty()) {
-      firewalls.forEach(this::addHateoasLinks); // Adiciona os links HATEOAS em cada Firewall
-    }
-    return ResponseEntity.status(HttpStatus.OK).body(firewalls);
-  }
-
-  @GetMapping("/{id}")
-  public ResponseEntity<Object> getFirewallById(@PathVariable(value = "id") Integer id) {
-    Optional<FirewallModel> firewallModel = firewallRepository.findById(id);
-    if (firewallModel.isEmpty()) {
-      return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Firewall não encontrado");
-    }
-    return ResponseEntity.status(HttpStatus.OK).body(addHateoasLinks(firewallModel.get()));
-  }
-
-  @PutMapping("/{id}")
-  public ResponseEntity<Object> updateFirewall(@PathVariable(value = "id") Integer id,
-                                               @RequestBody @Valid FirewallDTO firewallDTO) {
-    Optional<FirewallModel> firewallModelOptional = firewallRepository.findById(id);
-    if (firewallModelOptional.isEmpty()) {
-      return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Firewall não encontrado");
+    
+    private FirewallModel addHateoasLinks(FirewallModel firewall) {
+        Integer id = firewall.getId();
+        firewall.add(linkTo(methodOn(FirewallController.class).getFirewallById(id)).withSelfRel());
+        firewall.add(linkTo(methodOn(FirewallController.class).getAllFirewalls(Pageable.unpaged(), null)).withRel("Lista de Firewalls"));
+        return firewall;
     }
 
-    var firewallModel = firewallModelOptional.get();
-    BeanUtils.copyProperties(firewallDTO, firewallModel);
-    firewallRepository.save(firewallModel);
-
-    return ResponseEntity.status(HttpStatus.OK).body(addHateoasLinks(firewallModel));
-  }
-
-  @DeleteMapping("/{id}")
-  public ResponseEntity<Object> deleteFirewall(@PathVariable(value = "id") Integer id) {
-    Optional<FirewallModel> firewallModel = firewallRepository.findById(id);
-    if (firewallModel.isEmpty()) {
-      return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Firewall não encontrado");
+    
+    @PostMapping
+    public ResponseEntity<FirewallModel> saveFirewall(@RequestBody @Valid FirewallDTO firewallDTO) {
+        log.info("Recebida requisição para salvar firewall: {}", firewallDTO.dispositivo());
+        FirewallModel savedFirewall = firewallService.saveFirewall(firewallDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(addHateoasLinks(savedFirewall));
     }
-    firewallRepository.delete(firewallModel.get());
-    return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-  }
+
+    
+    @GetMapping
+    public ResponseEntity<Page<FirewallModel>> getAllFirewalls(Pageable pageable, @RequestParam(required = false) String filtro) {
+        log.info("Recebida requisição para listar todos os firewalls com filtro: {}", filtro);
+        Page<FirewallModel> firewalls = firewallService.getAllFirewalls(pageable, filtro);
+        firewalls.getContent().forEach(this::addHateoasLinks);
+        return ResponseEntity.ok(firewalls);
+    }
+
+ 
+    @GetMapping("/{id}")
+    public ResponseEntity<FirewallModel> getFirewallById(@PathVariable(value = "id") Integer id) {
+        log.info("Recebida requisição para buscar firewall por ID: {}", id);
+        FirewallModel firewall = firewallService.getFirewallById(id);
+        return ResponseEntity.ok(addHateoasLinks(firewall));
+    }
+
+
+    @PutMapping("/{id}")
+    public ResponseEntity<FirewallModel> updateFirewall(@PathVariable(value = "id") Integer id,
+                                                        @RequestBody @Valid FirewallDTO firewallDTO) {
+        log.info("Recebida requisição para atualizar firewall com ID: {}", id);
+        FirewallModel updatedFirewall = firewallService.updateFirewall(id, firewallDTO);
+        return ResponseEntity.ok(addHateoasLinks(updatedFirewall));
+    }
+
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteFirewall(@PathVariable(value = "id") Integer id) {
+        log.info("Recebida requisição para deletar firewall com ID: {}", id);
+        firewallService.deleteFirewall(id);
+        return ResponseEntity.noContent().build();
+    }
 }
+
