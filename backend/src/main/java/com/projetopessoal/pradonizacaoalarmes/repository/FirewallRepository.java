@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface FirewallRepository extends JpaRepository<FirewallModel, Integer> {
   boolean existsByDispositivo(String dispositivo);
+  Page<FirewallModel> findByDispositivoContainingIgnoreCase(String dispositivo, Pageable pageable);
 }
