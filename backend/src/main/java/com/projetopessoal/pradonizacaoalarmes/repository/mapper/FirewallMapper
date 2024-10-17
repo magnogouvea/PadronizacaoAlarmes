@@ -1,1 +1,6 @@
+@Mapper(componentModel = "spring")
+public interface FirewallMapper {
+    FirewallModel toModel(FirewallDTO dto);
+    FirewallDTO toDto(FirewallModel model);
+}
 
