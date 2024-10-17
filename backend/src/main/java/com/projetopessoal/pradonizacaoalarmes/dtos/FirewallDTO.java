@@ -1,6 +1,7 @@
 package com.projetopessoal.pradonizacaoalarmes.dtos;
 
 public record FirewallDTO(
+        @NotBlank(message = "Dispositivo não pode ser vazio")
         String dispositivo,
         boolean nomePadronizado,
         boolean wks,
